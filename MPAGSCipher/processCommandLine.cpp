@@ -10,7 +10,9 @@ bool processCommandLine(
 			bool& helpRequested,
 			bool& versionRequested, 
 			std::string& inputFileName, 
-			std::string& outputFileName)
+			std::string& outputFileName,
+			bool& doencrypt,
+		        size_t& thekey)
 {
 
   // Add a typedef that assigns another name for the given type for clarity
@@ -54,6 +56,28 @@ bool processCommandLine(
       else {
 	// Got filename, so assign value and advance past it
 	outputFileName = args[i+1];
+	++i;
+      }
+    }
+    else if (args[i] == "-e"){
+        // This is asking for encryption
+	doencrypt = true;
+    }
+    else if (args[i] == "-d"){
+	// This is asking for decryption
+        doencrypt = false;
+    }
+    else if (args[i] == "-k"){
+      // Handle cipher key
+      // Next element is cipher key unless -k is the last argument
+      if (i == nargs-1) {
+	std::cerr << "[error] -k requires a key argument" << std::endl;
+	// exit main with non-zero return to indicate failure
+	return 1;
+      }
+      else{
+	// Got a cipher key so assign a value and advance past it
+	thekey = std::stoul(args[i+1]);
 	++i;
       }
     }

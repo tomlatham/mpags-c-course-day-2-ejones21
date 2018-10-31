@@ -7,6 +7,7 @@
 // Our project headers
 #include "TransformChar.hpp"
 #include "processCommandLine.hpp"
+#include "runCaesarCipher.hpp"
 
 // For std::isalpha and std::isupper
 #include <cctype>
@@ -22,17 +23,22 @@ int main(int argc, char* argv[])
   bool versionRequested {false};
   std::string inputFile {""};
   std::string outputFile {""};
+  bool encrypt {false};
+  size_t key {1};
   if(processCommandLine(
 			cmdLineArgs, 
 			helpRequested,
 			versionRequested, 
 			inputFile, 
-			outputFile))
+			outputFile,
+			encrypt,
+			key))
     {return 1;}
 
   // Initialise variables for processing input text
   char inputChar {'x'};
   std::string outputText {""};
+  std::string encryptedCode{""};
 
   std::ifstream in_file{inputFile};
   bool ok_to_read = in_file.good();
@@ -60,6 +66,10 @@ int main(int argc, char* argv[])
 	}
   }
 
+  // Run the encryption code 
+  encryptedCode = runCaesarCipher(outputText, key, encrypt);
+
+
   // Output the transliterated text
   // Warn that output file option not yet implemented
   if (!outputFile.empty()) {
@@ -72,12 +82,13 @@ int main(int argc, char* argv[])
   bool ok_to_write = out_file.good();
 
   if(ok_to_write){
-    out_file <<outputText<< std::endl;
+    out_file <<encryptedCode<< std::endl;
   }
   else{  
-    std::cout << outputText << std::endl;
+    std::cout << encryptedCode << std::endl;
   }
 
+  
   // No requirement to return from main, but we do so for clarity
   // and for consistency with other functions
   return 0;
