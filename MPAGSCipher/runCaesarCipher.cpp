@@ -17,8 +17,12 @@ std::string runCaesarCipher(const std::string& inputText, const size_t key, cons
 {
   // Create alphabet container and output string
   const std::vector<char> alphabet{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+  const size_t alphabetSize { alphabet.size() };
   
   std::string outputEncrypt{""};
+
+  // Make sure that the key is in the range 0 - 25
+  const size_t truncatedKey { key % alphabetSize };
 
   // Loop over the input text
   for (const char& element : inputText){
@@ -30,13 +34,11 @@ std::string runCaesarCipher(const std::string& inputText, const size_t key, cons
 	   on whether encrypting or decrypting, and then retrieve the new 
 	   alphabet character and add it to the output */
 	if(encryption){
-	  size_t j{0};
-	  j = (i+key) % 26;
+	  size_t j { (i+truncatedKey) % alphabetSize };
 	  outputEncrypt += alphabet[j];
 	}
 	else {
-	  size_t k{0};
-	  k = (i+26-key) % 26;
+	  size_t k { (i+alphabetSize-truncatedKey) % alphabetSize };
 	  outputEncrypt += alphabet[k];
 	}
       }

@@ -27,17 +27,19 @@ bool processCommandLine(
 
     if (args[i] == "-h" || args[i] == "--help") {
       helpRequested = true;
+      break;
     }
     else if (args[i] == "--version") {
       versionRequested = true;
+      break;
     }
     else if (args[i] == "-i") {
       // Handle input file option
       // Next element is filename unless -i is the last argument
       if (i == nargs-1) {
 	std::cerr << "[error] -i requires a filename argument" << std::endl;
-	// exit main with non-zero return to indicate failure
-	return 1;
+	// return true to indicate failure
+	return true;
       }
       else {
 	// Got filename, so assign value and advance past it
@@ -50,8 +52,8 @@ bool processCommandLine(
       // Next element is filename unless -o is the last argument
       if (i == nargs-1) {
 	std::cerr << "[error] -o requires a filename argument" << std::endl;
-	// exit main with non-zero return to indicate failure
-	return 1;
+	// return true to indicate failure
+	return true;
       }
       else {
 	// Got filename, so assign value and advance past it
@@ -72,47 +74,28 @@ bool processCommandLine(
       // Next element is cipher key unless -k is the last argument
       if (i == nargs-1) {
 	std::cerr << "[error] -k requires a key argument" << std::endl;
-	// exit main with non-zero return to indicate failure
-	return 1;
+	// return true to indicate failure
+	return true;
       }
       else{
 	// Got a cipher key so assign a value and advance past it
+	if ( args[i+1].front() == '-' ) {
+	  std::cerr << "[error] -k requires a positive integer as the key argument" << std::endl;
+	  // return true to indicate failure
+	  return true;
+	}
 	thekey = std::stoul(args[i+1]);
 	++i;
       }
     }
     else {
-      // Have an unknown flag to output error message and return non-zero
-      // exit status to indicate failure
+      // Have an unknown flag to output error message and return true to
+      // indicate failure
       std::cerr << "[error] unknown argument '" << args[i] << "'\n";
-      return 1;
+      return true;
     }
   }
 
-  // Handle help, if requested
-  if (helpRequested) {
-    // Line splitting for readability
-    std::cout
-      << "Usage: mpags-cipher [-i <file>] [-o <file>]\n\n"
-      << "Encrypts/Decrypts input alphanumeric text using classical ciphers\n\n"
-      << "Available options:\n\n"
-      << "  -h|--help        Print this help message and exit\n\n"
-      << "  --version        Print version information\n\n"
-      << "  -i FILE          Read text to be processed from FILE\n"
-      << "                   Stdin will be used if not supplied\n\n"
-      << "  -o FILE          Write processed text to FILE\n"
-      << "                   Stdout will be used if not supplied\n\n";
-    // Help requires no further action, so return from main
-    // with 0 used to indicate success
-    return 0;
-  }
-
-  // Handle version, if requested
-  // Like help, requires no further action,
-  // so return from main with zero to indicate success
-  if (versionRequested) {
-    std::cout << "0.1.0" << std::endl;
-    return 0;
-  }
-  return 0;
+  // return false to indicate no problems encountered
+  return false;
 }
